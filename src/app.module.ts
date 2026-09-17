@@ -1,21 +1,17 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-
-export const { ObserveModule, ObserveInstrument } = createObserveModule();
-
+import { ApiKeyMiddleware } from './middleware/api-key.middleware';
+import { UserController } from './user/user.controller';
 @Module({
-  imports: [
-    ObserveModule.forRoot({
-      appKey: 'YOUR_APP_KEY',
-      appSecret: 'YOUR_APP_SECRET',
-      serviceId: 'nest-project-jsm',
-    }),
-    UserModule,
-  ],
+  imports: [UserModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ApiKeyMiddleware).forRoutes(UserController);
+  }
+}
