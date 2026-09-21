@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { StudentModule } from './student/student.module';
 import { CourcesModule } from './cources/cources.module';
+import { ProjectModule } from './project/project.module';
 @Module({
   imports: [
     UserModule,
@@ -17,12 +18,13 @@ import { CourcesModule } from './cources/cources.module';
     MongooseModule.forRoot(process.env.MONGO_DB_URI ?? ''),
     StudentModule,
     CourcesModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ApiKeyMiddleware).forRoutes(UserController);
+    consumer.apply(ApiKeyMiddleware).forRoutes('*');
   }
 }
